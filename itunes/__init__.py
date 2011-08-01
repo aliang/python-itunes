@@ -12,11 +12,11 @@ except ImportError:
 
 __name__ = 'pyitunes'
 __doc__ = 'A python interface to search iTunes Store'
-__author__ = 'Oscar Celma'
+__author__ = 'Alvin Liang, Oscar Celma'
 __version__ = '0.1'
 __license__ = 'GPL'
-__maintainer__ = 'Oscar Celma'
-__email__ = 'ocelma@bmat.com'
+__maintainer__ = 'Alvin Liang, Oscar Celma'
+__email__ = 'ayliang@gmail.com'
 __status__ = 'Beta'
 
 API_VERSION = '2'        # iTunes API version
@@ -182,11 +182,13 @@ class Search(_BaseObject):
         self._search_terms = dict()
         self._search_terms['term'] = query
         self._search_terms['country'] = country   # ISO Country code for iTunes Store
+        # TODO: Media not required
         self._search_terms['media'] = media       # The media type you want to search for
         if entity:
             self._search_terms['entity'] = entity # The type of results you want returned, relative to the specified media type
         if attribute:
             self._search_terms['attribute'] = attribute # The attribute you want to search for in the stores, relative to the specified media type
+        # TODO: Limit not required
         self._search_terms['limit'] = limit       # Results limit
         self._search_terms['lang'] = lang         # The language, English or Japanese, you want to use when returning search results
         self._search_terms['version'] = version   # The search result key version you want to receive back from your search
@@ -572,8 +574,14 @@ def search_album(query, limit=100, store=COUNTRY):
 def search_artist(query, limit=100, store=COUNTRY):
     return Search(query=query, media='music', entity='musicArtist', limit=limit, country=store).get()
 
-def search(query, media='all', limit=100, store=COUNTRY):
-    return Search(query=query, media=media, limit=limit, country=store).get()
+def search(*args, **kwargs):
+    if 'media' not in kwargs:
+    	kwargs['media'] = 'all'
+    if 'limit' not in kwargs:
+    	kwargs['limit'] = 100
+    if 'country' not in kwargs:
+    	kwargs['country'] = COUNTRY
+    return Search(*args, **kwargs).get()
 
 #LOOKUP
 def lookup(id):
